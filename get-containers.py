@@ -17,8 +17,10 @@ while True:
         output["containers"].append(i['name'])
 
     if container_data['next'] is None:
-        print(json.dumps(output, indent=2))
-        sys.exit(0)
+        with open("top-containers.json", "w") as fh:
+            fh.write(json.dumps(output, indent=2))
+            fh.write("\n")
+            sys.exit(0)
 
     url = container_data['next']
 
