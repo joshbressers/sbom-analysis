@@ -45,11 +45,12 @@ def main():
         elif c == "clefos":
             # Syft doesn't like this image, just skip it
             continue
+        else:
+            c = f"{c}:latest"
 
         docker_client.images.pull(c)
         output = docker_client.containers.run("anchore/syft", \
             "-o json --file /SBOMs/%s.json packages docker:%s" % (c, c), auto_remove=True, volumes=[f"{cwd}/SBOMs:/SBOMs", "/var/run/docker.sock:/var/run/docker.sock"])
-
 
 if __name__ == "__main__":
     main()

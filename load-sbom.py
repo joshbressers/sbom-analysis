@@ -4,47 +4,23 @@ import docker
 import json
 import os
 import uuid
+import glob
 from esbulkstream import Documents
 
 def main():
 
     cwd = os.getcwd()
-
-    docker_client = docker.from_env()
-
     es = Documents('sbom')
 
-    with open("top-containers.json") as fh:
-        container_names = json.load(fh)['containers']
+    the_files = glob.glob(f"{cwd}/SBOMs/*.json")
+    for sbom_file in the_files:
 
-    for c in container_names:
-        print("Scanning %s" % c)
-
-        if c == "elasticsearch":
-            c = "elasticsearch:8.0.0"
-        elif c == "logstash":
-            c = "logstash:8.0.0"
-        elif c == "kibana":
-            c = "kibana:8.0.0"
-        elif c == "jenkins":
-            c = "jenkins:2.60.3"
-        elif c == "oraclelinux":
-            c = "oraclelinux:8"
-        elif c == "opensuse":
-            continue
-        elif c == "ubuntu-debootstrap":
-            continue
-        elif c == "notary":
-            c = "notary:signer"
-        elif c == "docker-dev":
-            continue
-
-        sbom_file = f"{cwd}/SBOMs/{c}.json"
+        # Get just the container name
+        c = os.path.split(sbom_file)[-1][:-5]
+        print(c)
 
         with open(sbom_file) as sfh:
             spdx_data = json.loads(sfh.read())
-
-
             for p in spdx_data['artifacts']:
 
                 the_doc = {}

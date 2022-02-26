@@ -3,20 +3,38 @@
 import docker
 import json
 import uuid
+import os
+import glob
+import tempfile
 from esbulkstream import Documents
 
 def main():
 
+    cwd = os.getcwd()
+    es = Documents('vulns')
     docker_client = docker.from_env()
 
-    es = Documents('vulns')
+    # Pull down a new GrypeDB
+    grype_env = [
+        "GRYPE_DB_CACHE_DIR=/grype_cache",
+        "GRYPE_DB_AUTO_UPDATE=false"
+    ]
+    temp_dir = tempfile.TemporaryDirectory()
+    grype_db_location = temp_dir.name
+    output = docker_client.containers.run("anchore/grype", "db update" ,volumes=[f"{grype_db_location}:/grype_cache"], environment=grype_env)
 
-    with open("top-containers.json") as fh:
-        container_names = json.load(fh)['containers']
+    print(output)
 
-    for c in container_names:
+    the_files = glob.glob(f"{cwd}/SBOMs/*.json")
+    for sbom_file in the_files:
+
+        # Get just the container name
+        sbom_name = os.path.split(sbom_file)[-1]
+        c = sbom_name[:-5]
+        print(c)
+
         output = docker_client.containers.run("anchore/grype", \
-            "-c /grype.yaml -o json %s" % c, volumes=['/home/bress/src/sbom-analysis/grype.yaml:/grype.yaml'])
+            "-o json sbom:/SBOMs/%s" % sbom_name, volumes=[f"{cwd}/SBOMs:/SBOMs", f"{grype_db_location}:/grype_cache"], environment=grype_env)
 
         json_data = json.loads(output)
 
@@ -34,6 +52,10 @@ def main():
             the_doc['related'] = p['relatedVulnerabilities']
 
             es.add(the_doc, uuid.uuid4())
+
+    # We have to clean up the temporary directory, the DB is owned by root
+    output = docker_client.containers.run("alpine", "rm -rf /grype_cache/*"
+,volumes=[f"{grype_db_location}:/grype_cache"])
 
     es.done()
 
