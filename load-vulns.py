@@ -23,8 +23,6 @@ def main():
     grype_db_location = temp_dir.name
     output = docker_client.containers.run("anchore/grype", "db update" ,volumes=[f"{grype_db_location}:/grype_cache"], environment=grype_env)
 
-    print(output)
-
     the_files = glob.glob(f"{cwd}/SBOMs/*.json")
     for sbom_file in the_files:
 
@@ -54,8 +52,10 @@ def main():
             es.add(the_doc, uuid.uuid4())
 
     # We have to clean up the temporary directory, the DB is owned by root
-    output = docker_client.containers.run("alpine", "rm -rf /grype_cache/*"
+    output = docker_client.containers.run("alpine", "rm -rf /grype_cache/3"
 ,volumes=[f"{grype_db_location}:/grype_cache"])
+
+    temp_dir.cleanup()
 
     es.done()
 
