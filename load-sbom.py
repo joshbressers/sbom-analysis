@@ -11,6 +11,7 @@ def main():
 
     cwd = os.getcwd()
     es = Documents('sbom')
+    files = Documents('sbom-files')
 
     the_files = glob.glob(f"{cwd}/SBOMs/*.json")
     for sbom_file in the_files:
@@ -37,9 +38,23 @@ def main():
                     if 'description' in p['metadata']:
                         the_doc['description'] = p['metadata']['description']
 
+
+                    if 'files' in p['metadata']:
+                        for f in p['metadata']['files']:
+                            file_doc = {}
+                            file_doc['container_name'] = c
+                            file_doc['package_name'] = p['name']
+                            if type(f) is dict:
+                                # Only load dicts (there are other things
+                                # here sometimes
+                                file_doc.update(f)
+                                files.add(file_doc, uuid.uuid4())
+
+
                 es.add(the_doc, uuid.uuid4())
 
     es.done()
+    files.done()
 
 
 if __name__ == "__main__":
