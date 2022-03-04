@@ -50,7 +50,10 @@ def main():
 
         docker_client.images.pull(c)
         output = docker_client.containers.run("anchore/syft", \
-            "-o json --file /SBOMs/%s.json packages docker:%s" % (c, c), auto_remove=True, volumes=[f"{cwd}/SBOMs:/SBOMs", "/var/run/docker.sock:/var/run/docker.sock"])
+            "-o json --file /SBOMs/%s.json packages docker:%s" % (c, c), \
+            auto_remove=True, \
+            environment=["SYFT_FILE_METADATA_CATALOGER_ENABLED=true"], \
+            volumes=[f"{cwd}/SBOMs:/SBOMs", "/var/run/docker.sock:/var/run/docker.sock"])
 
 if __name__ == "__main__":
     main()
