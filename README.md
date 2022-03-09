@@ -10,13 +10,13 @@ This also takes up a fair bit of space because of all the images, make sure
 you have enough disk space.
 
 The order of operations are basically:
-Run Elasticsearch
-Create a python virtual environment
-Install https://github.com/joshbressers/es-bulk-stream
-Run get-containers.py
-Run build-sbom.py
-Run load-sbom.py
-Run load-vulns.py
+* Run Elasticsearch
+* Create a python virtual environment
+* Install https://github.com/joshbressers/es-bulk-stream
+* Run get-containers.py
+* Run build-sbom.py
+* Run load-sbom.py
+* Run load-vulns.py
 
 Each of these steps isn't as simple as a quick run. I'll write this up
 nicer if there's interest. It's a very bespoke system right now, the
