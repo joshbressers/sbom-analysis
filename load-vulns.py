@@ -11,7 +11,7 @@ from esbulkstream import Documents
 def main():
 
     cwd = os.getcwd()
-    es = Documents('vulns', mapping='')
+    es = Documents('vulns', mapping='', delete=True)
     docker_client = docker.from_env()
 
     # Pull down a new GrypeDB

@@ -10,8 +10,8 @@ from esbulkstream import Documents
 def main():
 
     cwd = os.getcwd()
-    es = Documents('sbom', mapping='')
-    files = Documents('sbom-files', mapping='')
+    es = Documents('sbom', mapping='', delete=True)
+    files = Documents('sbom-files', mapping='', delete=True)
 
     the_files = glob.glob(f"{cwd}/SBOMs/*.json")
     for sbom_file in the_files:

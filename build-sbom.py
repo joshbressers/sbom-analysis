@@ -21,11 +21,11 @@ def main():
         print("Scanning %s" % c)
 
         if c == "elasticsearch":
-            c = "elasticsearch:8.0.0"
+            c = "elasticsearch:8.1.2"
         elif c == "logstash":
-            c = "logstash:8.0.0"
+            c = "logstash:8.1.2"
         elif c == "kibana":
-            c = "kibana:8.0.0"
+            c = "kibana:8.1.2"
         elif c == "jenkins":
             c = "jenkins:2.60.3"
         elif c == "oraclelinux":
